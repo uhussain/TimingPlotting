@@ -1,4 +1,6 @@
 #include "tdrstyle.C"
+#include "PlotStyles.C"
+//#include "returnTimingEfficiency.C"
 
 void plotTiming(){
   TString isoCut = "1";
@@ -8,21 +10,21 @@ void plotTiming(){
   Int_t color3 = TColor::GetColor("#00695C"); //green blue
   Int_t color4 = TColor::GetColor("#F44336"); //red
 
-  //gROOT->ProcessLine(".L tdrstyle.C");
   setTDRStyle();
 
   gStyle->SetOptStat(0);
   gROOT->ForceStyle();
   
   TCanvas *c1 = new TCanvas("c","c",800,800);
-  c1->SetBottomMargin(0.15);
+  setCanvasStyle(c1);
   c1->cd();
+
   TString plotName = "tauEfficiency-ZTT-200PU";
   TString legLabel = "Tau Efficiency ZTT 200PU";
-
   TH1F *basehist = new TH1F("basehist","",100,0,2.5);
   basehist->SetStats(false);
   TString iso200("0.050"), iso140("0.050");
+  TString date = "1_25_17";
 
 
   double zs_200[4]   = {0.,0.,0.,0.};
@@ -47,10 +49,7 @@ void plotTiming(){
   double exl[4] = {0.,0.,0.,0.};
   double exh[4] = {0.,0.,0.,0.};
 
-  //TString numer("genTauPt > 10 && vtxIndex==0 && tauPt> 25 ");
-  TString numer("genTauPt > 22 && abs(genTauEta) <2.1 && tauPt> 25 && vtxIndex==0 && PFCharged <"+isoCut);
-  //TString numer_time("genMatchedPrompt==1 && vtxIndex==0 && pt > 20 && chIsoZTCut_4sigma/pt < 0.050");
-  //TString denom("genTauPt > 10 && vtxIndex==0 ");
+  TString numer("genTauPt > 22 && abs(genTauEta) < 2.1 && dmf==10  &&  tauPt> 25 && vtxIndex==0 && PFCharged <"+isoCut);
   TString denom("genTauPt > 22 && abs(genTauEta) <2.1 && vtxIndex==0");
   TString logand(" && " );
 
@@ -70,7 +69,8 @@ void plotTiming(){
   // pu 200
   TChain pu200_gaus("PFChargedBased/Ntuple");  
   //TChain pu200_gaus("VLooseMVA/Ntuple");  
-  pu200_gaus.Add("timing-ZTT-PU200.root");
+  //pu200_gaus.Add("timing-ZTT-PU200.root");
+  pu200_gaus.Add("timing-Jan25/ZTT200PU-jetPTCut.root");
   //pu200_gaus.Add("ZTT-timing0PU.root");
 
   // first region
@@ -119,8 +119,8 @@ void plotTiming(){
   TGraphAsymmErrors *pu200_eff = new TGraphAsymmErrors (4,dens_200,vals_200,exl,exh,erlo_200,erhi_200);
   //////////////////////////////////////////
 
-  //TString numer("genTauPt > 10 && vtxIndex==0 && tauPt> 25 ");
-  TString numer("genTauPt > 22 && abs(genTauEta) <2.1 && tauPt> 25 && vtxIndex==0 && PFChargedT3 <"+isoCut);
+  //TString numer("genTauPt > 10 && vtxIndex==0 && dmf==10  &&  tauPt> 25 ");
+  TString numer("genTauPt > 22 && abs(genTauEta) <2.1 && dmf==10  &&  tauPt> 25 && vtxIndex==0 && PFChargedT3 <"+isoCut);
   //TString numer_time("genMatchedPrompt==1 && vtxIndex==0 && pt > 20 && chIsoZTCut_4sigma/pt < 0.050");
   //TString denom("genTauPt > 10 && vtxIndex==0 ");
   TString denom("genTauPt > 22 && abs(genTauEta) <2.1 && vtxIndex==0");
@@ -188,8 +188,8 @@ void plotTiming(){
 
   /////////////////////////////////////////
 
-  //TString numer("genTauPt > 10 && vtxIndex==0 && tauPt> 25 ");
-  TString numer("genTauPt > 22 && abs(genTauEta) <2.1 && tauPt> 25 && vtxIndex==0 && PFChargedT2 <"+isoCut);
+  //TString numer("genTauPt > 10 && vtxIndex==0 && dmf==10  &&  tauPt> 25 ");
+  TString numer("genTauPt > 22 && abs(genTauEta) <2.1 && dmf==10  &&  tauPt> 25 && vtxIndex==0 && PFChargedT2 <"+isoCut);
   //TString numer_time("genMatchedPrompt==1 && vtxIndex==0 && pt > 20 && chIsoZTCut_4sigma/pt < 0.050");
   //TString denom("genTauPt > 10 && vtxIndex==0 ");
   TString denom("genTauPt > 22 && abs(genTauEta) <2.1 && vtxIndex==0");
@@ -256,10 +256,7 @@ void plotTiming(){
 
   /////////////////////////////////////////
 
-  //TString numer("genTauPt > 10 && vtxIndex==0 && tauPt> 25 ");
-  TString numer("genTauPt > 22 && abs(genTauEta) <2.1 && tauPt> 25 && vtxIndex==0 && PFChargedT1 <"+isoCut);
-  //TString numer_time("genMatchedPrompt==1 && vtxIndex==0 && pt > 20 && chIsoZTCut_4sigma/pt < 0.050");
-  //TString denom("genTauPt > 10 && vtxIndex==0 ");
+  TString numer("genTauPt > 22 && abs(genTauEta) <2.1 && dmf==10  &&  tauPt> 25 && vtxIndex==0 && PFChargedT4 <"+isoCut);
   TString denom("genTauPt > 22 && abs(genTauEta) <2.1 && vtxIndex==0");
   TString logand(" && " );
 
@@ -323,55 +320,37 @@ void plotTiming(){
 
 
   /////////////////////////////////////////
-  //c1->cd();
   basehist->GetXaxis()->SetTitle("density (events / mm)");
   basehist->GetYaxis()->SetTitle("Tau ID Efficiency ");  
-  basehist->GetYaxis()->SetRangeUser(0.0,0.7);
+  basehist->GetYaxis()->SetRangeUser(0.0,0.5);
   basehist->GetXaxis()->SetRangeUser(0.3,2.60);
   basehist->Draw("");
 
-  //double vals_200[4] = {0.1,0.1,0.1,0.1};
-  //double dens_200[4] = {0.3,0.4,0.5,1.6};
+  
+  //setPlotStyleAsymm(                  plot , Int_t  color, Int_t fillStyle,  Int_t MarkerStyle){
+  setPlotStyleAsymm(  pu200_eff_timingCutT1,       color3,            3005,                 23);
+  pu200_eff_timingCutT1->Draw("P Same");
 
-  pu200_eff_timingCutT1->SetLineColor(color3);
-  pu200_eff_timingCutT1->SetMarkerColor(color3);
-  pu200_eff_timingCutT1->SetFillColor(color3);
-  pu200_eff_timingCutT1->SetFillStyle(3005);
-  pu200_eff_timingCutT1->SetMarkerStyle(23);
-  //pu200_eff_timingCutT1->Draw("P Same");
-
-  pu200_eff_timingCutT2->SetLineColor(color2);
-  pu200_eff_timingCutT2->SetMarkerColor(color2);
-  pu200_eff_timingCutT2->SetFillColor(color2);
-  pu200_eff_timingCutT2->SetFillStyle(3005);
-  pu200_eff_timingCutT2->SetMarkerStyle(23);
+  setPlotStyleAsymm(  pu200_eff_timingCutT2,       color2,            3005,                 23);
   pu200_eff_timingCutT2->Draw("P Same");
 
-  pu200_eff_timingCutT3->SetLineColor(color4);
-  pu200_eff_timingCutT3->SetMarkerColor(color4);
-  pu200_eff_timingCutT3->SetFillColor(color4);
-  pu200_eff_timingCutT3->SetFillStyle(3005);
-  pu200_eff_timingCutT3->SetMarkerStyle(23);
+  //setPlotStyleAsymm(                  plot , Int_t  color, Int_t fillStyle,  Int_t MarkerStyle){
+  setPlotStyleAsymm(  pu200_eff_timingCutT3,       color4,            3005,                 23);
   pu200_eff_timingCutT3->Draw("P Same");
 
-  pu200_eff->SetLineColor(color1);
-  pu200_eff->SetMarkerColor(color1);
-  pu200_eff->SetFillColor(color1);
-  pu200_eff->SetFillStyle(3005);
-  pu200_eff->SetMarkerStyle(23);
+//setPlotStyleAsymm(                  plot , Int_t  color, Int_t fillStyle,  Int_t MarkerStyle){
+  setPlotStyleAsymm(             pu200_eff,       color1,            3005,                 23);
   pu200_eff->Draw("P Same");
 
-  TLegend *leg = new TLegend(.55, .206, .75, .42,legLabel,"nbNDC");  
-  leg->SetBorderSize(0);
-  leg->SetShadowColor(kWhite);
-  leg->SetFillColor(kWhite);
-  leg->SetTextSize(0.03);
-  leg->AddEntry(pu200_eff,"PF Charged Iso All","PL"); 
-  //leg->AddEntry(pu200_eff_timingCutT1,"T1 Interval Track Req","PL");
+  TLegend *leg = new TLegend(.55, .706, .75, .92,legLabel,"nbNDC");  
+  setLegendStyles(leg,legLabel, 4);
+
+  leg->AddEntry(            pu200_eff,   "PF Charged Iso All","PL"); 
   leg->AddEntry(pu200_eff_timingCutT2,"T2 Interval Track Req","PL");
   leg->AddEntry(pu200_eff_timingCutT3,"T3 Interval Track Req","PL");
+  leg->AddEntry(pu200_eff_timingCutT1,"T4 Interval Track Req","PL");
   leg->Draw();
   
-  c1->SaveAs("~/Dropbox/TimingPlots/"+plotName+".pdf");
-  c1->SaveAs("~/Dropbox/TimingPlots/"+plotName+".png");
+  c1->SaveAs("~/Dropbox/"+date+"/TimingPlots/"+plotName+"-dm10-jetptcut.pdf");
+  c1->SaveAs("~/Dropbox/"+date+"/TimingPlots/"+plotName+"-dm10-jetptcut.png");
 }

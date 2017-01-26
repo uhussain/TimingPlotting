@@ -2,7 +2,7 @@
 #include "PlotStyles.C"
 
 void plotTimingFakes(){
-  TString isoCut = "1.5";
+  TString isoCut = "5";
   Int_t color1 = TColor::GetColor("#283593"); //dark blue
   Int_t color2 = TColor::GetColor("#0288D1"); //medium blue
 
@@ -13,17 +13,28 @@ void plotTimingFakes(){
 
   gStyle->SetOptStat(0);
   gROOT->ForceStyle();
-  
+  TGaxis::SetMaxDigits(4);
+
   TCanvas *c1 = new TCanvas("c","c",800,800);
   setCanvasStyle(c1);
   c1->cd();
 
-  TString plotName = "tauEfficiency-ZTT-PU200";
+  // pu 200
+  TChain pu200_gaus("PFChargedBased/jetNtuple");  
+  //pu200_gaus.Add("timing-ZTT-PU200-Jan19.root");
+  //pu200_gaus.Add("timing-Jan25/ZTT200PU-jetPTCut.root");
+  pu200_gaus.Add("timing-Jan25/ZTT200PU-addThreeProngCheck.root");
+  TString plotName = "tauEfficiency-ZTT-PU200-3prongTReq-5GeVCut";
   TString legLabel = "Jet Fake ZTT 200PU";
+
   TH1F *basehist = new TH1F("basehist","",100,0,2.5);
   basehist->SetStats(false);
   TString iso200("0.050"), iso140("0.050");
+  TString date = "1_25_17";
 
+  TString numer = "jetPt > 22 &&  dmf==10  && good3ProngT3 > 0 && abs(jetEta) <2.1 && tauPt> 25 && vtxIndex==0";
+  TString denom = "jetPt > 22 && abs(jetEta) <2.1 && vtxIndex==0";
+  TString logand = " && ";
 
   double zs_200[4]   = {0.,0.,0.,0.};
   double vals_200[4] = {0.,0.,0.,0.};
@@ -47,14 +58,12 @@ void plotTimingFakes(){
   double exl[4] = {0.,0.,0.,0.};
   double exh[4] = {0.,0.,0.,0.};
 
-  TString numer("jetPt > 22 &&  dmf==10  && abs(jetEta) <2.1 && tauPt> 25 && vtxIndex==0 && PFCharged <"+isoCut);
-  TString denom("jetPt > 22 &&  dmf==10  && abs(jetEta) <2.1 && vtxIndex==0");
-  TString logand(" && " );
+
 
   TString z1("abs(vtxZ) < 2.0"), 
-    z2("abs(vtxZ) < 4.0 && abs(vtxZ) > 2.0"), 
-    z3("abs(vtxZ) < 7.0 && abs(vtxZ) > 4.0"), 
-    z4("abs(vtxZ) < 8.0 && abs(vtxZ) > 7.0"); //fix me should be 6.0 to 8.0
+    z2("abs(vtxZ) < 4.5 && abs(vtxZ) > 2.0"), 
+    z3("abs(vtxZ) < 6.0 && abs(vtxZ) > 4.5"), 
+    z4("abs(vtxZ) < 8.0 && abs(vtxZ) > 6.0"); //fix me should be 6.0 to 8.0
 
   // temp histo
   TH1F temp("temp","temp",71,0,8);
@@ -64,16 +73,13 @@ void plotTimingFakes(){
   mygaus.SetParameter(0,0);
   mygaus.SetParameter(1,52);
 
-  // pu 200
-  TChain pu200_gaus("PFChargedBased/jetNtuple");  
-  //pu200_gaus.Add("timing-ZTT-PU200.root");
-  pu200_gaus.Add("timing-ZTT-PU200-Jan19.root");
 
+  TString numeratorNominal = numer + "&& PFCharged <" + isoCut;
 
   // first region
   double Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z1,"goff");
   zs_200[0] = 10.*temp.GetMean();
-  double Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z1,"goff");
+  double Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorNominal+logand+z1,"goff");
   std::cout<<"Nsel/Ntot = Vals "<<Nsel<<"/"<<Ntot<<"="<<Nsel/Ntot<<std::endl;
 
   vals_200[0] = Nsel/Ntot;
@@ -83,7 +89,7 @@ void plotTimingFakes(){
   // second region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z2,"goff");
   zs_200[1] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z2,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorNominal+logand+z2,"goff");
   
   vals_200[1] = Nsel/Ntot;
   erhi_200[1] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[1];
@@ -92,7 +98,7 @@ void plotTimingFakes(){
   // third region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z3,"goff");
   zs_200[2] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z3,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorNominal+logand+z3,"goff");
   
   vals_200[2] = Nsel/Ntot;
   erhi_200[2] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[2];
@@ -101,7 +107,7 @@ void plotTimingFakes(){
   // fourth region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z4,"goff");
   zs_200[3] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z4,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorNominal+logand+z4,"goff");
 
   vals_200[3] = Nsel/Ntot;
   erhi_200[3] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[3];
@@ -109,21 +115,14 @@ void plotTimingFakes(){
   
   for( unsigned i = 0; i < 4; ++i ) {
     dens_200[i] = 200*mygaus.Eval(zs_200[i]);
-    std::cout<< i<<" density: "<<dens_200[i]<<" values: "<<vals_200[i]<<std::endl;
+    std::cout<< i<<" density region: "<<dens_200[i]<<"(events/mm) values: "<<vals_200[i]<<std::endl;
     std::cout << "200PU region " << i+1 << ' ' << zs_200[i] << ' ' << 200*mygaus.Eval(zs_200[i]) << ' ' <<   vals_200[i] << " +/- " << (erhi_200[i])  << "/" << ( erlo_200[i]) << std::endl;
   }
 
   TGraphAsymmErrors *pu200_eff = new TGraphAsymmErrors (4,dens_200,vals_200,exl,exh,erlo_200,erhi_200);
   //////////////////////////////////////////
-
-  TString numer("jetPt > 22 &&  dmf==10  && abs(jetEta) <2.1 && tauPt> 25 && vtxIndex==0 && PFChargedT3 <"+isoCut);
-  TString denom("jetPt > 22 &&  dmf==10  && abs(jetEta) <2.1 && vtxIndex==0");
-  TString logand(" && " );
-
-  TString z1("abs(vtxZ) < 2.0"), 
-    z2("abs(vtxZ) < 4.0 && abs(vtxZ) > 2.0"), 
-    z3("abs(vtxZ) < 7.0 && abs(vtxZ) > 4.0"), 
-    z4("abs(vtxZ) < 8.0 && abs(vtxZ) > 7.0"); //fix me should be 6.0 to 8.0
+  
+  TString numeratorT3 = numer + "&& PFChargedT3 <"+isoCut;
 
   // temp histo
   TH1F temp("temp","temp",71,0,8);
@@ -136,7 +135,7 @@ void plotTimingFakes(){
   // first region
   double Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z1,"goff");
   zs_200[0] = 10.*temp.GetMean();
-  double Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z1,"goff");
+  double Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT3+logand+z1,"goff");
   std::cout<<"Nsel/Ntot = Vals "<<Nsel<<"/"<<Ntot<<"="<<Nsel/Ntot<<std::endl;
 
   vals_200[0] = Nsel/Ntot;
@@ -146,7 +145,7 @@ void plotTimingFakes(){
   // second region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z2,"goff");
   zs_200[1] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z2,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT3+logand+z2,"goff");
   
   vals_200[1] = Nsel/Ntot;
   erhi_200[1] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[1];
@@ -155,7 +154,7 @@ void plotTimingFakes(){
   // third region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z3,"goff");
   zs_200[2] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z3,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT3+logand+z3,"goff");
   
   vals_200[2] = Nsel/Ntot;
   erhi_200[2] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[2];
@@ -164,7 +163,7 @@ void plotTimingFakes(){
   // fourth region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z4,"goff");
   zs_200[3] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z4,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT3+logand+z4,"goff");
 
   vals_200[3] = Nsel/Ntot;
   erhi_200[3] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[3];
@@ -172,7 +171,7 @@ void plotTimingFakes(){
   
   for( unsigned i = 0; i < 4; ++i ) {
     dens_200[i] = 200*mygaus.Eval(zs_200[i]);
-    std::cout<< i<<" density: "<<dens_200[i]<<" values: "<<vals_200[i]<<std::endl;
+    std::cout<< i<<" density region: "<<dens_200[i]<<"(events/mm) values: "<<vals_200[i]<<std::endl;
     std::cout << "200PU region " << i+1 << ' ' << zs_200[i] << ' ' << 200*mygaus.Eval(zs_200[i]) << ' ' <<   vals_200[i] << " +/- " << (erhi_200[i])  << "/" << ( erlo_200[i]) << std::endl;
   }
 
@@ -181,17 +180,7 @@ void plotTimingFakes(){
 
   /////////////////////////////////////////
 
-  //TString numer("jetPt > 10 && vtxIndex==0 && tauPt> 25 ");
-  TString numer("jetPt > 22 &&  dmf==10  && abs(jetEta) <2.1 && tauPt> 25 && vtxIndex==0 && PFChargedT2 <"+isoCut);
-  //TString numer_time("genMatchedPrompt==1 && vtxIndex==0 && pt > 20 && chIsoZTCut_4sigma/pt < 0.050");
-  //TString denom("jetPt > 10 && vtxIndex==0 ");
-  TString denom("jetPt > 22 &&  dmf==10  && abs(jetEta) <2.1 && vtxIndex==0");
-  TString logand(" && " );
-
-  TString z1("abs(vtxZ) < 2.0"), 
-    z2("abs(vtxZ) < 4.0 && abs(vtxZ) > 2.0"), 
-    z3("abs(vtxZ) < 7.0 && abs(vtxZ) > 4.0"), 
-    z4("abs(vtxZ) < 8.0 && abs(vtxZ) > 7.0"); //fix me should be 6.0 to 8.0
+  TString numeratorT2 = numer + "&& PFChargedT2 <"+isoCut;
 
   // temp histo
   TH1F temp("temp","temp",71,0,8);
@@ -205,7 +194,7 @@ void plotTimingFakes(){
   // first region
   double Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z1,"goff");
   zs_200[0] = 10.*temp.GetMean();
-  double Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z1,"goff");
+  double Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT2+logand+z1,"goff");
   std::cout<<"Nsel/Ntot = Vals "<<Nsel<<"/"<<Ntot<<"="<<Nsel/Ntot<<std::endl;
 
   vals_200[0] = Nsel/Ntot;
@@ -215,7 +204,7 @@ void plotTimingFakes(){
   // second region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z2,"goff");
   zs_200[1] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z2,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT2+logand+z2,"goff");
   
   vals_200[1] = Nsel/Ntot;
   erhi_200[1] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[1];
@@ -224,7 +213,7 @@ void plotTimingFakes(){
   // third region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z3,"goff");
   zs_200[2] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z3,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT2+logand+z3,"goff");
   
   vals_200[2] = Nsel/Ntot;
   erhi_200[2] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[2];
@@ -233,7 +222,7 @@ void plotTimingFakes(){
   // fourth region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z4,"goff");
   zs_200[3] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z4,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT2+logand+z4,"goff");
 
   vals_200[3] = Nsel/Ntot;
   erhi_200[3] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[3];
@@ -241,7 +230,7 @@ void plotTimingFakes(){
   
   for( unsigned i = 0; i < 4; ++i ) {
     dens_200[i] = 200*mygaus.Eval(zs_200[i]);
-    std::cout<< i<<" density: "<<dens_200[i]<<" values: "<<vals_200[i]<<std::endl;
+    std::cout<< i<<" density region: "<<dens_200[i]<<"(events/mm) values: "<<vals_200[i]<<std::endl;
     std::cout << "200PU region " << i+1 << ' ' << zs_200[i] << ' ' << 200*mygaus.Eval(zs_200[i]) << ' ' <<   vals_200[i] << " +/- " << (erhi_200[i])  << "/" << ( erlo_200[i]) << std::endl;
   }
 
@@ -250,17 +239,7 @@ void plotTimingFakes(){
 
   /////////////////////////////////////////
 
-  //TString numer("jetPt > 10 && vtxIndex==0 && tauPt> 25 ");
-  TString numer("jetPt > 22 &&  dmf==10  && abs(jetEta) <2.1 && tauPt> 25 && vtxIndex==0 && PFChargedT4 <"+isoCut);
-  //TString numer_time("genMatchedPrompt==1 && vtxIndex==0 && pt > 20 && chIsoZTCut_4sigma/pt < 0.050");
-  //TString denom("jetPt > 10 && vtxIndex==0 ");
-  TString denom("jetPt > 22 &&  dmf==10  && abs(jetEta) <2.1 && vtxIndex==0");
-  TString logand(" && " );
-
-  TString z1("abs(vtxZ) < 2.0"), 
-    z2("abs(vtxZ) < 4.0 && abs(vtxZ) > 2.0"), 
-    z3("abs(vtxZ) < 7.0 && abs(vtxZ) > 4.0"), 
-    z4("abs(vtxZ) < 8.0 && abs(vtxZ) > 7.0"); //fix me should be 6.0 to 8.0
+  TString numeratorT4 = numer + "&& PFChargedT4 <"+isoCut;
 
   // temp histo
   TH1F temp("temp","temp",71,0,8);
@@ -274,7 +253,7 @@ void plotTimingFakes(){
   // first region
   double Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z1,"goff");
   zs_200[0] = 10.*temp.GetMean();
-  double Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z1,"goff");
+  double Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT4+logand+z1,"goff");
   std::cout<<"Nsel/Ntot = Vals "<<Nsel<<"/"<<Ntot<<"="<<Nsel/Ntot<<std::endl;
 
   vals_200[0] = Nsel/Ntot;
@@ -284,7 +263,7 @@ void plotTimingFakes(){
   // second region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z2,"goff");
   zs_200[1] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z2,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT4+logand+z2,"goff");
   
   vals_200[1] = Nsel/Ntot;
   erhi_200[1] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[1];
@@ -293,7 +272,7 @@ void plotTimingFakes(){
   // third region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z3,"goff");
   zs_200[2] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z3,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT4+logand+z3,"goff");
   
   vals_200[2] = Nsel/Ntot;
   erhi_200[2] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[2];
@@ -302,7 +281,7 @@ void plotTimingFakes(){
   // fourth region
   Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denom+logand+z4,"goff");
   zs_200[3] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numer+logand+z4,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numeratorT4+logand+z4,"goff");
 
   vals_200[3] = Nsel/Ntot;
   erhi_200[3] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[3];
@@ -310,24 +289,23 @@ void plotTimingFakes(){
   
   for( unsigned i = 0; i < 4; ++i ) {
     dens_200[i] = 200*mygaus.Eval(zs_200[i]);
-    std::cout<< i<<" density: "<<dens_200[i]<<" values: "<<vals_200[i]<<std::endl;
+    std::cout<< i<<" density region: "<<dens_200[i]<<"(events/mm) values: "<<vals_200[i]<<std::endl;
     std::cout << "200PU region " << i+1 << ' ' << zs_200[i] << ' ' << 200*mygaus.Eval(zs_200[i]) << ' ' <<   vals_200[i] << " +/- " << (erhi_200[i])  << "/" << ( erlo_200[i]) << std::endl;
   }
 
-  TGraphAsymmErrors *pu200_eff_timingCutT1 = new TGraphAsymmErrors (4,dens_200,vals_200,exl,exh,erlo_200,erhi_200);
+  TGraphAsymmErrors *pu200_eff_timingCutT4 = new TGraphAsymmErrors (4,dens_200,vals_200,exl,exh,erlo_200,erhi_200);
 
 
   /////////////////////////////////////////
-  //c1->cd();
   basehist->GetXaxis()->SetTitle("density (events / mm)");
   basehist->GetYaxis()->SetTitle("Jet Fake Probability ");  
-  basehist->GetYaxis()->SetRangeUser(0.0,0.5);
+  basehist->GetYaxis()->SetRangeUser(0.0,0.009);
   basehist->GetXaxis()->SetRangeUser(0.3,2.60);
   basehist->Draw("");
   
 //setPlotStyleAsymm(                  plot , Int_t  color, Int_t fillStyle,  Int_t MarkerStyle){
-  setPlotStyleAsymm(  pu200_eff_timingCutT1,       color3,            3005,                 23);
-  pu200_eff_timingCutT1->Draw("P Same");
+  setPlotStyleAsymm(  pu200_eff_timingCutT4,       color3,            3005,                 23);
+  pu200_eff_timingCutT4->Draw("P Same");
 
 //setPlotStyleAsymm(                  plot , Int_t  color, Int_t fillStyle,  Int_t MarkerStyle){
   setPlotStyleAsymm(  pu200_eff_timingCutT2,       color2,            3005,                 23);
@@ -356,9 +334,9 @@ void plotTimingFakes(){
   leg->AddEntry(            pu200_eff,   "PF Charged Iso All","PL"); 
   leg->AddEntry(pu200_eff_timingCutT2,"T2 Interval Track Req","PL");
   leg->AddEntry(pu200_eff_timingCutT3,"T3 Interval Track Req","PL");
-  leg->AddEntry(pu200_eff_timingCutT1,"T4 Interval Track Req","PL");
+  leg->AddEntry(pu200_eff_timingCutT4,"T4 Interval Track Req","PL");
   leg->Draw();
   
-  c1->SaveAs("~/Dropbox/TimingPlots/"+plotName+"-fake-dm10-no-sig-track-t-req-Jan19.pdf");
-  c1->SaveAs("~/Dropbox/TimingPlots/"+plotName+"-fake-dm10-no-sig-track-t-req-Jan19.png");
+  c1->SaveAs("~/Dropbox/"+date+"/TimingPlots/"+plotName+".pdf");
+  c1->SaveAs("~/Dropbox/"+date+"/TimingPlots/"+plotName+".png");
 }
