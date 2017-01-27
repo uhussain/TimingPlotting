@@ -19,8 +19,8 @@ void plotTiming(){
   setCanvasStyle(c1);
   c1->cd();
 
-  TString plotName = "tauEfficiency-ZTT-200PU-1prong";
-  TString legLabel = "Tau Efficiency ZTT 200PU 1 prong";
+  TString plotName = "tauEfficiency-ZTT-200PU";
+  TString legLabel = "Tau Efficiency ZTT 200PU";
   TH1F *basehist = new TH1F("basehist","",100,0,2.5);
 
   TChain pu200_gaus("PFChargedBased/Ntuple");  
@@ -56,7 +56,7 @@ void plotTiming(){
   double exl[4] = {0.,0.,0.,0.};
   double exh[4] = {0.,0.,0.,0.};
 
-  TString numerator = "genTauPt > 22 && abs(genTauEta) < 2.1  &&  tauPt> 25 && vtxIndex==0 &&dmf==0";
+  TString numerator = "genTauPt > 22 && abs(genTauEta) < 2.1  &&  tauPt> 25 && vtxIndex==0";
   TString denominator = "genTauPt > 22 && abs(genTauEta) <2.1 && vtxIndex==0";
   TString logand = " && ";
 
