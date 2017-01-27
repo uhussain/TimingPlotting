@@ -25,11 +25,11 @@ TGraphAsymmErrors * plotTimeReturnTGraphAsymmErrors(TChain &pu200_gaus, TString 
   double exl[4] = {0.,0.,0.,0.};
   double exh[4] = {0.,0.,0.,0.};
 
-  TString z1("abs(vtxZ) < 2.0"), 
-    z2("abs(vtxZ) < 4.5 && abs(vtxZ) > 2.0"), 
-    z3("abs(vtxZ) < 6.0 && abs(vtxZ) > 4.5"), 
-    z4("abs(vtxZ) < 8.0 && abs(vtxZ) > 6.0"); //fix me should be 6.0 to 8.0
-
+  TString z1("abs(vtxZ) < 3.0"), 
+    z2("abs(vtxZ) < 6.5 && abs(vtxZ) > 3.0"), 
+    z3("abs(vtxZ) < 8.3 && abs(vtxZ) > 6.5"), 
+    z4("abs(vtxZ) < 9.0 && abs(vtxZ) > 7.75"); //fix me should be 6.0 to 8.0
+  
   // temp histo
   TH1F temp("temp","temp",71,0,8);
 
@@ -75,10 +75,11 @@ TGraphAsymmErrors * plotTimeReturnTGraphAsymmErrors(TChain &pu200_gaus, TString 
   erhi_200[3] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[3];
   erlo_200[3] = vals_200[3] - TEfficiency::ClopperPearson(Ntot,Nsel,0.683,false);
   
-  for( unsigned i = 0; i < 4; ++i ) {
+  for( unsigned i = 0; i < 3; ++i ) {
     dens_200[i] = 200*mygaus.Eval(zs_200[i]);
     std::cout<< i<<" density region: "<<dens_200[i]<<"(events/mm) values: "<<vals_200[i]<<std::endl;
     std::cout << "200PU region " << i+1 << ' ' << zs_200[i] << ' ' << 200*mygaus.Eval(zs_200[i]) << ' ' <<   vals_200[i] << " +/- " << (erhi_200[i])  << "/" << ( erlo_200[i]) << std::endl;
+    std::cout<<std::endl;
   }
 
   TGraphAsymmErrors *pu200_eff = new TGraphAsymmErrors (4,dens_200,vals_200,exl,exh,erlo_200,erhi_200);

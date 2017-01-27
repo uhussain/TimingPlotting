@@ -1,16 +1,30 @@
 #include "tdrstyle.C"
 
+Int_t color1 = TColor::GetColor("#283593"); //dark blue
+Int_t color2 = TColor::GetColor("#0288D1"); //medium blue
+
+Int_t color3 = TColor::GetColor("#00695C"); //green blue
+Int_t color4 = TColor::GetColor("#F44336"); //red
+
 void setCanvasStyle(TCanvas *c1){
   c1->SetBottomMargin(0.15);
 }
 
 void setPlotStyleAsymm( TGraphAsymmErrors *plot, Int_t color, Int_t fillStyle, Int_t markerStyle){
-
+  
   plot->SetLineColor(color);
   plot->SetMarkerColor(color);
   plot->SetFillStyle(fillStyle);
   plot->SetMarkerStyle(markerStyle);
+  
+}
 
+void setPlotStyle( TH1F *plot, Int_t color, Int_t fillStyle, Int_t markerStyle){
+  plot->SetLineColor(color);
+  plot->SetMarkerColor(color);
+  plot->SetFillStyle(fillStyle);
+  plot->SetMarkerStyle(markerStyle);
+  
 }
 
 
@@ -31,12 +45,13 @@ void setLegendStyles( TLegend *leg , TString legLabel = "", Int_t option = 0){
     leg->SetY2(0.92);
     //leg = new TLegend(.15, .606, .35, .92,legLabel,"nbNDC");  
   }
+
   //lower left
   if(option == 2){
-    leg->SetX1(0.15);
-    leg->SetY1(0.206);
-    leg->SetX2(0.35);
-    leg->SetY2(0.52);
+    leg->SetX1(0.211);
+    leg->SetY1(0.205);
+    leg->SetX2(0.410);
+    leg->SetY2(0.518);
     //leg = new TLegend(.15, .206, .35, .52,legLabel,"nbNDC");  
   }
   //lower right
@@ -57,7 +72,7 @@ void setLegendStyles( TLegend *leg , TString legLabel = "", Int_t option = 0){
   }
   //center upper
   if(option == 5){
-    leg->SetX1(0.45);
+    leg->SetX1(0.40);
     leg->SetY1(0.606);
     leg->SetX2(0.65);
     leg->SetY2(0.92);
