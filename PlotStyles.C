@@ -14,6 +14,7 @@ void setPlotStyleAsymm( TGraphAsymmErrors *plot, Int_t color, Int_t fillStyle, I
   
   plot->SetLineColor(color);
   plot->SetMarkerColor(color);
+  plot->SetMarkerSize(1.5);
   plot->SetFillStyle(fillStyle);
   plot->SetMarkerStyle(markerStyle);
   
@@ -57,7 +58,7 @@ void setLegendStyles( TLegend *leg , TString legLabel = "", Int_t option = 0){
   //lower right
   if(option == 3){
     leg->SetX1(0.55);
-    leg->SetY1(0.206);
+    leg->SetY1(0.286);
     leg->SetX2(0.75);
     leg->SetY2(0.52);
     //leg = new TLegend(.55, .206, .75, .52,legLabel,"nbNDC");  
@@ -73,7 +74,7 @@ void setLegendStyles( TLegend *leg , TString legLabel = "", Int_t option = 0){
   //center upper
   if(option == 5){
     leg->SetX1(0.40);
-    leg->SetY1(0.606);
+    leg->SetY1(0.646);
     leg->SetX2(0.65);
     leg->SetY2(0.92);
     //leg = new TLegend(.45, .606, .65, .92,legLabel,"nbNDC");  

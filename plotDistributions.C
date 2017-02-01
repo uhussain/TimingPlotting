@@ -8,7 +8,7 @@ void plotDistributions(TChain &pu200_gaus, TString denominator, TString name){
     z4("abs(vtxZ) < 8.0 && abs(vtxZ) > 7.0"); //fix me should be 6.0 to 8.0
 
   TCanvas *c2 = new TCanvas("c2","c2",800,800);
-  TH1F *basehist = new TH1F("basehist","",20,0,400);
+  TH1F *basehist_dist = new TH1F("basehist_dist","",20,0,400);
   setCanvasStyle(c2);
   c2->cd();
   

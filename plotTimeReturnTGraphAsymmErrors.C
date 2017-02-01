@@ -42,7 +42,7 @@ TGraphAsymmErrors * plotTimeReturnTGraphAsymmErrors(TChain &pu200_gaus, TString 
   double Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denominator+"&&"+z1,"goff");
   zs_200[0] = 10.*temp.GetMean();
   double Nsel = pu200_gaus.Draw("abs(vtxZ)",numerator+"&&"+z1,"goff");
-  std::cout<<"Nsel/Ntot = Vals "<<Nsel<<"/"<<Ntot<<"="<<Nsel/Ntot<<std::endl;
+  //std::cout<<"Nsel/Ntot = Vals "<<Nsel<<"/"<<Ntot<<"="<<Nsel/Ntot<<std::endl;
 
   vals_200[0] = Nsel/Ntot;
   erhi_200[0] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[0];
@@ -67,9 +67,9 @@ TGraphAsymmErrors * plotTimeReturnTGraphAsymmErrors(TChain &pu200_gaus, TString 
   erlo_200[2] = vals_200[2] - TEfficiency::ClopperPearson(Ntot,Nsel,0.683,false);
 
   // fourth region
-  Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denominator+"&&"+z4,"goff");
+  Ntot = pu200_gaus.Draw("abs(vtxZ) >> temp",denominator+"&&"+z3,"goff");
   zs_200[3] = 10.*temp.GetMean();
-  Nsel = pu200_gaus.Draw("abs(vtxZ)",numerator+"&&"+z4,"goff");
+  Nsel = pu200_gaus.Draw("abs(vtxZ)",numerator+"&&"+z3,"goff");
 
   vals_200[3] = Nsel/Ntot;
   erhi_200[3] = TEfficiency::ClopperPearson(Ntot,Nsel,0.683,true) - vals_200[3];
@@ -81,6 +81,7 @@ TGraphAsymmErrors * plotTimeReturnTGraphAsymmErrors(TChain &pu200_gaus, TString 
     std::cout << "200PU region " << i+1 << ' ' << zs_200[i] << ' ' << 200*mygaus.Eval(zs_200[i]) << ' ' <<   vals_200[i] << " +/- " << (erhi_200[i])  << "/" << ( erlo_200[i]) << std::endl;
     std::cout<<std::endl;
   }
+    dens_200[3] = 200*mygaus.Eval(zs_200[2]);
 
   TGraphAsymmErrors *pu200_eff = new TGraphAsymmErrors (4,dens_200,vals_200,exl,exh,erlo_200,erhi_200);
 

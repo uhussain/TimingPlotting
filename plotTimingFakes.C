@@ -5,7 +5,7 @@
 
 void plotTimingFakes(){
 
-  TString isoCut = "2.5";
+  TString isoCut = "2";
 
   setTDRStyle();
 
@@ -24,18 +24,18 @@ void plotTimingFakes(){
   TChain pu0_gaus("PFChargedBased/jetNtuple");  
   pu0_gaus.Add("timing-Jan26-2/ZTT-RelVal-0.root");
 
-  TString plotName = "jetFakeProbability-ZTT-200-iso2.5";
-  TString legLabel = "Jet Fake ZTT 200PU All DMs, iso = 2.5GeV";
+  TString plotName = "jetFakeProbability-ZTT-200-iso-2GeV-denom-genJetMatch-reco";
+  TString legLabel = "Jet Fake ZTT 200PU All DMs, rel iso = 2 GeV";
 
-  TH1F *basehist = new TH1F("basehist","",100,0,2.5);
+  TH1F *basehist = new TH1F("basehist","",100,0,5);
   basehist->SetStats(false);
   TString iso200("0.050"), iso140("0.050");
-  TString date = "1_26_17";
+  TString date = "1_28_17";
 
   //TString numerator = "jetPt > 22 && jetPt < 400 && genJetMatch > 0 &&  dmf==10 && good3ProngT3 > 0  && abs(jetEta) <2.1 && abs(tauEta)<2.1 && tauPt> 30 && vtxIndex==0";
   //TString denominator = "jetPt > 22 && jetPt < 400 && genJetMatch > 0 && abs(jetEta) <2.1 && vtxIndex==0";
-  TString numerator = "jetPt > 30 && jetPt < 400 && (dmf!=5&&dmf!=6 && dmf > 0) && abs(jetEta) <2.1 && abs(tauEta)<2.1 && tauPt> 35 && vtxIndex==0";
-  TString denominator = "jetPt > 30 && jetPt < 400 && abs(jetEta) <2.1 && vtxIndex==0";
+  TString numerator = "jetPt > 30 && jetPt < 400 && genJetMatch>0 && (dmf!=5&&dmf!=6 && dmf > 0) && abs(jetEta) <2.1 && abs(tauEta)<2.1 && tauPt> 35 && vtxIndex==0 ";
+  TString denominator = "jetPt > 30 && jetPt < 400 && genJetMatch>0 && abs(jetEta) <2.1 && vtxIndex==0 && (dmf!=5&&dmf!=6 && dmf > 0)";
 
   TString logand = " && ";
 
@@ -61,7 +61,7 @@ void plotTimingFakes(){
   double exl[4] = {0.,0.,0.,0.};
   double exh[4] = {0.,0.,0.,0.};
 
-  //plotDistributions(pu200_gaus,denominator,"jetPt-denominator");
+  plotDistributions(pu0_gaus,denominator,"jetPt-denominator-0PU");
 
   TString numeratorNominal = numerator + "&& PFCharged <" + isoCut;
   //plotDistributions(pu200_gaus,numeratorNominal,"jetPt-nominal");
@@ -93,8 +93,8 @@ void plotTimingFakes(){
   /////////////////////////////////////////
   basehist->GetXaxis()->SetTitle("density (events / mm)");
   basehist->GetYaxis()->SetTitle("Jet Fake Probability ");  
-  basehist->GetYaxis()->SetRangeUser(0.0,0.01);
-  basehist->GetXaxis()->SetRangeUser(0.3,2.60);
+  basehist->GetYaxis()->SetRangeUser(0.0,0.03);
+  basehist->GetXaxis()->SetRangeUser(0.5,2.60);
   basehist->GetYaxis()->SetLabelSize(0.035);
 
   basehist->Draw("");
@@ -121,9 +121,9 @@ void plotTimingFakes(){
   //pu0_eff_timingCutT4->SetFillColor(kBlue+4);
   //pu0_eff_timingCutT4->SetFillStyle(3005);   
   //setPlotStyleAsymm(  pu0_eff_timingCutT4,       color3,            3005,                 23);
-  //pu0_eff->SetFillColor(kBlue+4);
-  //pu0_eff->SetFillStyle(3005);   
-  //pu0_eff->Draw("4, Same");
+  pu0_eff->SetFillColor(kBlue+4);
+  pu0_eff->SetFillStyle(3005);   
+  pu0_eff->Draw("4, Same");
 
 
   //setLegendStyles options

@@ -3,7 +3,7 @@
 #include "plotTimeReturnTGraphAsymmErrors.C"
 
 void plotTiming(){
-  TString isoCut = "2.5";
+  TString isoCut = "1.5";
   Int_t color1 = TColor::GetColor("#283593"); //dark blue
   Int_t color2 = TColor::GetColor("#0288D1"); //medium blue
 
@@ -19,19 +19,19 @@ void plotTiming(){
   setCanvasStyle(c1);
   c1->cd();
 
-  TString plotName = "tauEfficiency-ZTT-200PU";
-  TString legLabel = "Tau Efficiency ZTT 200PU";
+  TString plotName = "tauEfficiency-ZTT-200PU-iso1p5GeV-isoOnly-timeMatch";
+  TString legLabel = "Tau Isolation Efficiency ZTT 200PU";
   TH1F *basehist = new TH1F("basehist","",100,0,2.5);
 
   TChain pu200_gaus("PFChargedBased/Ntuple");  
-  pu200_gaus.Add("timing-Jan26/ZTT-RelVal-200.root");
+  pu200_gaus.Add("timing-Jan26-2/ZTT-RelVal-200.root");
 
   TChain pu0_gaus("PFChargedBased/Ntuple");  
-  pu0_gaus.Add("timing-Jan26/ZTT-RelVal-0.root");
+  pu0_gaus.Add("timing-Jan26-2/ZTT-RelVal-0.root");
 
   basehist->SetStats(false);
   TString iso200("0.050"), iso140("0.050");
-  TString date = "1_27_17";
+  TString date = "2_1_17";
 
 
   double zs_200[4]   = {0.,0.,0.,0.};
@@ -56,8 +56,8 @@ void plotTiming(){
   double exl[4] = {0.,0.,0.,0.};
   double exh[4] = {0.,0.,0.,0.};
 
-  TString numerator = "genTauPt > 22 && abs(genTauEta) < 2.1  &&  tauPt> 25 && vtxIndex==0";
-  TString denominator = "genTauPt > 22 && abs(genTauEta) <2.1 && vtxIndex==0";
+  TString numerator = "genTauPt > 22 && abs(genTauEta) < 2.1 && (dmf!=5&&dmf!=6 && dmf > -1) && (dmf == 0 || dmf == 1 || (dmf == 10 && good3ProngT4>0))  &&  tauPt> 25 && vtxIndex==0";
+  TString denominator = "genTauPt > 22 && abs(genTauEta) <2.1 && vtxIndex==0 && (dmf!=5&&dmf!=6 && dmf > -1) && (dmf == 0 || dmf == 1 || (dmf == 10&& good3ProngT4>0))";
   TString logand = " && ";
 
   TString numeratorNominal = numerator + "&& PFCharged <"+isoCut;
