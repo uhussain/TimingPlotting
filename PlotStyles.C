@@ -6,6 +6,8 @@ Int_t color2 = TColor::GetColor("#0288D1"); //medium blue
 Int_t color3 = TColor::GetColor("#00695C"); //green blue
 Int_t color4 = TColor::GetColor("#F44336"); //red
 
+Int_t color5 = TColor::GetColor("#FF9900"); //Mustard Yellow
+
 void setCanvasStyle(TCanvas *c1){
   c1->SetBottomMargin(0.15);
 }
@@ -13,8 +15,9 @@ void setCanvasStyle(TCanvas *c1){
 void setPlotStyleAsymm( TGraphAsymmErrors *plot, Int_t color, Int_t fillStyle, Int_t markerStyle){
   
   plot->SetLineColor(color);
+  plot->SetLineWidth(2);
   plot->SetMarkerColor(color);
-  plot->SetMarkerSize(1.5);
+  plot->SetMarkerSize(2.5);
   plot->SetFillStyle(fillStyle);
   plot->SetMarkerStyle(markerStyle);
   

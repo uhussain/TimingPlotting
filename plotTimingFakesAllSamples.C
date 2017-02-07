@@ -1,10 +1,11 @@
 #include "tdrstyle.C"
 #include "PlotStyles.C"
 #include "plotTimeReturnTGraphAsymmErrors.C"
+#include "plotTimeReturnTGraphAsymmErrorsRange2.C"
 #include "plotTimeReturnTGraphAsymmErrors1Line.C"
 #include "plotDistributions.C"
 
-void plotTimingFakes(){
+void plotTimingFakesAllSamples(){
 
   TString isoCut = "2";
 
@@ -22,11 +23,14 @@ void plotTimingFakes(){
   TChain pu200_gaus("PFChargedBased/jetNtuple");  
   pu200_gaus.Add("timing-Feb1/ZTT-RelVal-200.root");
 
+  //pu 140
+  TChain pu140_gaus("PFChargedBased/jetNtuple");  
+  pu140_gaus.Add("timing-Feb1/ZTT-RelVal-140.root");
+
   TChain pu0_gaus("PFChargedBased/jetNtuple");  
   pu0_gaus.Add("timing-Feb1/ZTT-RelVal-0.root");
 
-  TString plotName = "jetFakeProbability-ZTT-200-iso-2GeV-denom-genJetMatch-reco";
-  //TString legLabel = "Jet Fake ZTT 200PU iso = 2 GeV";
+  TString plotName = "compilation-jetFakeProbability-ZTT-200-iso-2GeV-denom-genJetMatch-reco-V2";
   TString legLabel = "Jets PF Charged Isolation < 2 GeV";
 
   TH1F *basehist = new TH1F("basehist","",100,0,5);
@@ -67,28 +71,16 @@ void plotTimingFakes(){
 
   TString numeratorNominal = numerator + "&& PFCharged <" + isoCut;
   //plotDistributions(pu200_gaus,numeratorNominal,"jetPt-nominal");
-  TGraphAsymmErrors *pu200_eff = plotTimeReturnTGraphAsymmErrors(pu200_gaus, numeratorNominal,denominator);
+  TGraphAsymmErrors *pu200_eff = plotTimeReturnTGraphAsymmErrorsRange2(pu200_gaus, numeratorNominal,denominator);
+  TGraphAsymmErrors *pu140_eff = plotTimeReturnTGraphAsymmErrors(pu140_gaus, numeratorNominal,denominator);
   TGraphAsymmErrors *pu0_eff   = plotTimeReturnTGraphAsymmErrors1Line(pu0_gaus, numeratorNominal,denominator);
-
-  //////////////////////////////////////////
-  
-  TString numeratorT3 = numerator + "&& PFChargedT3 <"+isoCut;
-  //plotDistributions(pu200_gaus,numeratorT3,"jetPt-T3");
-  TGraphAsymmErrors *pu200_eff_timingCutT3 = plotTimeReturnTGraphAsymmErrors(pu200_gaus, numeratorT3,denominator);
-  //TGraphAsymmErrors *pu0_eff_timingCutT3   = plotTimeReturnTGraphAsymmErrors(pu0_gaus,   numeratorT3,denominator);
-
-  /////////////////////////////////////////
-
-  TString numeratorT2 = numerator + "&& PFChargedT2 <"+isoCut;
-  //plotDistributions(pu200_gaus,numeratorT2,"jetPt-T2");
-  TGraphAsymmErrors *pu200_eff_timingCutT2 = plotTimeReturnTGraphAsymmErrors(pu200_gaus, numeratorT2,denominator);
-  //TGraphAsymmErrors *pu0_eff_timingCutT2   = plotTimeReturnTGraphAsymmErrors(pu0_gaus,   numeratorT2,denominator);
 
   /////////////////////////////////////////
 
   TString numeratorT4 = numerator + "&& PFChargedT4 <"+isoCut;
   //plotDistributions(pu200_gaus,numeratorT4,"jetPt-T4");
-  TGraphAsymmErrors *pu200_eff_timingCutT4 = plotTimeReturnTGraphAsymmErrors(pu200_gaus, numeratorT4,denominator);
+  TGraphAsymmErrors *pu200_eff_timingCutT4 = plotTimeReturnTGraphAsymmErrorsRange2(pu200_gaus, numeratorT4,denominator);
+  TGraphAsymmErrors *pu140_eff_timingCutT4 = plotTimeReturnTGraphAsymmErrors(pu140_gaus, numeratorT4,denominator);
 
   //TGraphAsymmErrors *pu0_eff_timingCutT4   = plotTimeReturnTGraphAsymmErrors(pu0_gaus,   numeratorT4,denominator);
 
@@ -102,19 +94,19 @@ void plotTimingFakes(){
   basehist->Draw("");
   
 //setPlotStyleAsymm(                  plot , Int_t  color, Int_t fillStyle,  Int_t MarkerStyle){
-  setPlotStyleAsymm(  pu200_eff_timingCutT4,       color3,            3005,                 23);
+  setPlotStyleAsymm(  pu200_eff_timingCutT4,       color4,            3005,                 33);
   pu200_eff_timingCutT4->Draw("P Same");
 
 //setPlotStyleAsymm(                  plot , Int_t  color, Int_t fillStyle,  Int_t MarkerStyle){
-  setPlotStyleAsymm(  pu200_eff_timingCutT2,       color2,            3005,                 23);
-  pu200_eff_timingCutT2->Draw("P Same");
+  setPlotStyleAsymm(  pu140_eff_timingCutT4,       color1,            3005,                 33);
+  pu140_eff_timingCutT4->Draw("P Same");
 
 //setPlotStyleAsymm(                  plot , Int_t  color, Int_t fillStyle,  Int_t MarkerStyle){
-  setPlotStyleAsymm(  pu200_eff_timingCutT3,       color4,            3005,                 23);
-  pu200_eff_timingCutT3->Draw("P Same");
+  setPlotStyleAsymm(             pu140_eff,       color3,            3005,                 23);
+  pu140_eff->Draw("P Same");
 
 //setPlotStyleAsymm(                  plot , Int_t  color, Int_t fillStyle,  Int_t MarkerStyle){
-  setPlotStyleAsymm(             pu200_eff,       color1,            3005,                 23);
+  setPlotStyleAsymm(             pu200_eff,       color5,            3005,                 23);
   pu200_eff->Draw("P Same");
 
   ////////////////// PU 0
@@ -140,12 +132,20 @@ void plotTimingFakes(){
   TLegend *leg = new TLegend(.15, .606, .35, .92,legLabel,"nbNDC");
   setLegendStyles(leg,legLabel, 5);
 
-  leg->AddEntry(            pu200_eff,   "PF Charged Isolation Nominal","PL"); 
-  leg->AddEntry(pu200_eff_timingCutT2,"2#sigma Interval Tracks","PL");
-  leg->AddEntry(pu200_eff_timingCutT3,"3#sigma Interval Tracks","PL");
-  leg->AddEntry(pu200_eff_timingCutT4,"4#sigma Interval Tracks","PL");
+
+
+  leg->AddEntry(pu140_eff,"140PU HL-LHC","PL");
+  leg->AddEntry(pu140_eff_timingCutT4,"140PU HL-LHC + MIP Timing","PL");
+
+  leg->AddEntry(pu200_eff,"200PU HL-LHC","PL");
+  leg->AddEntry(pu200_eff_timingCutT4,"200PU HL-LHC + MIP Timing","PL");
+
+  leg->AddEntry(            pu0_eff,   "Zero Pileup","F"); 
+
   leg->Draw();
-  
+
+  TLine *line = new TLine(0,0.15,3,0.15);
+  line->Draw();  
   c1->SaveAs("~/Dropbox/"+date+"/TimingPlots/"+plotName+".pdf");
   c1->SaveAs("~/Dropbox/"+date+"/TimingPlots/"+plotName+".png");
 }
