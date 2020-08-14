@@ -1,5 +1,5 @@
-#include "/usr/local/include/root/TStyle.h"
-#include "/usr/local/include/root/TROOT.h"
+#include "TStyle.h"
+#include "TROOT.h"
 
 // tdrGrid: Turns the grid lines on (true) or off (false)
 void setTDRStyle();
