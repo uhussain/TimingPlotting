@@ -39,7 +39,7 @@ void applyPadStyle(TPad* pad1){
 }
 
 void plotEfficiency(){
-  TString fileName = "timing-ZTT-PU200.root"; 
+  TString fileName = "/data/uhussain/TauTimingPhase2/CMSSW_8_1_0_pre16/src/RecoTauTag/phase2Taus/test/timing-TTBar-PU200r2-v1.root"; 
   TString treePath = "PFChargedBased/Ntuple";
   int bins = 20;
   int low  = 0;
@@ -60,7 +60,7 @@ void plotEfficiency(){
   Color_t color = TColor::GetColor("#283593");//dark blue color1
   Color_t color1 = TColor::GetColor("#F44336");//red color4
   Color_t color2 = TColor::GetColor("#0288D1"); //green blue color2
-  TString outFileName = "plotEfficiency-ZTT";
+  TString outFileName = "plotEfficiency-TTBar";
 
   setTDRStyle();
   //tdrStyle->SetOptStat(0); // To display the mean and RMS:   SetOptStat("mr");
